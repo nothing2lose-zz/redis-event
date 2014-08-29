@@ -1,0 +1,20 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+
+      div.event1
+      p 선착순제 이벤트!
+      form(name="login", action="/events/first-served", method="post")
+          span id :
+          input(type="text", name="user_id")
+          input(type="submit", value="submit!")
+
+      div.event2
+
+      p 랜덤 이벤트!
+      form(name="login", action="/events/random", method="post")
+          span id :
+          input(type="text", name="user_id")
+          input(type="submit", value="login")
