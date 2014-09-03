@@ -14,5 +14,10 @@
     "morgan": "~1.0.0",
     "redis": "^0.12.1",
     "static-favicon": "~1.0.0"
+  },
+  "devDependencies": {
+    "restler": "^3.2.2",
+    "should": "^4.0.4",
+    "supertest": "^0.13.0"
   }
 }

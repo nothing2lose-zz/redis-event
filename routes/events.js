@@ -1,56 +1,83 @@
 var express = require('express');
 var router = express.Router();
+var ctrler = require('../controllers/redis_controller');
 
-var client = global.RC;
-var f_event_name = 'fs';
 /* GET home page. */
 
-var genText = function (user_id, rank) {
-    return { title: '선착순 결과! id ['+ user_id +']: ' + (rank + 1) + " 등" };
+var genResult = function (title, picked_users, cb) {
+    if ( undefined === picked_users ) picked_users = [];
+
+    ctrler.allRandomEventMemebers( function(result){
+
+        cb({ title: title, random_users:result.members, picked_users:picked_users });
+    });
+
+
 }
-router.post('/first-served', function(req, res) {
 
 
-    var time = new Date().getTime();
+router.post('/test/first-served', function(req, res){
     var user_id = req.param('user_id', undefined);
-
     if (user_id) {
     } else {
         res.send(400);
     }
-    client.zscore(f_event_name, user_id, function(err, reply){
+    ctrler.firstServedEvent(user_id, function (result) {
+        res.send(200, result.rank);
+    });
+});
 
-        if (reply === null) {
+router.post('/first-served', function(req, res) {
 
-            client.zadd(f_event_name,time, user_id, function(err, reply) {
-
-                if (!err && reply !== null) {
-
-                    client.zrank(f_event_name, user_id, function(err, reply) {
-
-                        if (!err && reply !== null) {
-                            res.render('index', genText(user_id, reply + 1));
-                        }
-
-                    });
-                }
-            });
+    var user_id = req.param('user_id', undefined);
+    if (user_id) {
+    } else {
+        res.send(400);
+    }
+    ctrler.firstServedEvent(user_id, function (result) {
+        if (result.code !== 0) {
+            res.send(500);
         } else {
+            var title = '선착순 결과! id ['+ user_id +']: ' + (result.rank + 1) + " 등";
+            genResult(title, undefined, function (result){
+                res.render('index', result);
+            })
 
-            client.zrank(f_event_name, user_id, function(err, reply) {
-                if (!err && reply !== null) {
-                    res.render('index', genText(user_id, reply));
-                }
-            });
+        }
+    })
+
+});
+
+router.post('/random-pick', function(req, res) {
+    ctrler.pickRandomEventMember(1, function(result){
+        if (result.code !== 0) {
+            res.send(500);
+        } else {
+            var picked_memebers = result.members;
+            genResult("뽑기 결과", picked_memebers, function (result){
+                res.render('index', result);
+            })
         }
     });
-
-
-
 });
-
 
 router.post('/random', function(req, res) {
-    res.render('index', { title: '랜덤 결과!' });
+    var user_id = req.param('user_id', undefined);
+    if (user_id) {
+    } else {
+        res.send(400);
+    }
+    ctrler.addRandomEventMember(user_id, function (result) {
+        if (result.code !== 0) {
+            res.send(500);
+        } else {
+            genResult("등록 성공", undefined, function (result){
+                res.render('index', result);
+            })
+        }
+
+    });
 });
+
+
 module.exports = router;

@@ -1,0 +1,97 @@
+var client = global.RC;
+var F_EVENT_NAME = 'fs';
+var R_EVENT_NAME = 're'
+
+var addRandomEventMember = function (user_id, cb) {
+    var result = {};
+    result.code = 400;
+    client.sadd(R_EVENT_NAME, user_id, function(err, reply) {
+//        console.log(err);
+//        console.log(reply);
+        if (!err && reply !== null) {
+            result.code = 0;
+            cb(result);
+        } else {
+            cb(result);
+        }
+    });
+}
+
+var allRandomEventMemebers = function (cb) {
+    var result = {};
+    result.code = 400;
+    client.smembers(R_EVENT_NAME, function (err, replies) {
+        if (!err && replies !== null) {
+            result.code = 0;
+            result.members = replies;
+            cb(result);
+        } else {
+            result.members = [];
+            cb(result)
+        }
+    });
+}
+
+var pickRandomEventMember = function (count, cb) {
+    var result = {};
+    result.code = 400;
+    client.srandmember(R_EVENT_NAME, count, function (err, replies) {
+        if (!err && replies !== null) {
+            result.code = 0;
+            result.members = replies;
+            cb(result);
+        } else {
+            cb(result);
+        }
+    });
+}
+
+var firstServedEvent = function (user_id, cb) {
+    var result = {};
+    result.code = 400;
+    var time = new Date().getTime();
+    client.zscore(F_EVENT_NAME, user_id, function(err, reply){
+
+        if (reply === null) {
+
+            client.zadd(F_EVENT_NAME,time, user_id, function(err, reply) {
+
+                if (!err && reply !== null) {
+
+                    client.zrank(F_EVENT_NAME, user_id, function(err, reply) {
+
+                        if (!err && reply !== null) {
+                            result.code = 0;
+                            result.rank = reply;
+                            return cb(result);
+                        } else {
+                            return cb(result);
+                        }
+
+                    });
+                } else {
+                    return cb(result);
+                }
+            });
+
+        } else {
+
+            client.zrank(F_EVENT_NAME, user_id, function(err, reply) {
+                if (!err && reply !== null) {
+                    result.code = 0;
+                    result.rank = reply;
+                    return cb(result);
+                } else {
+                    return cb(result);
+                }
+            });
+        }
+    });
+}
+
+module.exports = {
+    addRandomEventMember : addRandomEventMember,
+    allRandomEventMemebers: allRandomEventMemebers,
+    pickRandomEventMember: pickRandomEventMember,
+    firstServedEvent: firstServedEvent
+}
