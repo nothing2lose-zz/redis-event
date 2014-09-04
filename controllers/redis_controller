@@ -73,7 +73,9 @@ var allRandomEventMemebers = function (cb) {
 var pickRandomEventMember = function (count, cb) {
     var result = {};
     result.code = 400;
-    client.srandmember(R_EVENT_NAME, count, function (err, replies) {
+    // 데모용 서버에 2.4.x의 redis 설치되었음. 해당 버전에 srandmember 명령어에 2번째 파라미터는 없다.
+//    client.srandmember(R_EVENT_NAME, count, function (err, replies) {
+    client.srandmember(R_EVENT_NAME, function (err, replies) {
         if (!err && replies !== null) {
             result.code = 0;
             result.members = replies;
