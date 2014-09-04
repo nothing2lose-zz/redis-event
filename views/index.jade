@@ -3,6 +3,9 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
+      dvi.attendees
+      p 선착순 이벤트 참여자수 : #{at_fs}
+      p 랜덤이벤트 참여자수 ! : #{at_random}
 
       div.event1
       p 선착순제 이벤트!
@@ -18,8 +21,11 @@ block content
           input(type="text", name="user_id")
           input(type="submit", value="add!")
 
+
+      div.gotcha
+      p 랜덤 이벤트 당첨자를 뽑자!
       form(name="exec-random" action="/events/random-pick", method="post")
-        input(type="submit", value="gotcha!")
+          input(type="submit", value="뽑기~ ㅎㅎ!")
 
       p 랜덤 이벤트 등록된 맴버
       ul#random_users

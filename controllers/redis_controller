@@ -1,14 +1,52 @@
 var client = global.RC;
 var F_EVENT_NAME = 'fs';
-var R_EVENT_NAME = 're'
+var R_EVENT_NAME = 're';
+
+var F_EVENT_NUM = 'fsn'
+var R_EVENT_NUM = 'ren';
+
+var genResult = function (title, picked_users, cb) {
+    if ( undefined === picked_users ) picked_users = [];
+
+    self.allRandomEventMemebers( function(result){
+        self.numberOfAttendees(function (attendees) {
+            if (attendees.first_served == null) {
+                attendees.first_served = 0;
+            }
+            if (attendees.random == null) {
+                attendees.random = 0;
+            }
+            cb({ title: title, random_users:result.members, picked_users:picked_users, at_random:attendees.random, at_fs:attendees.first_served});
+        })
+    });
+};
+
+var numberOfAttendees = function (cb) {
+    var result = {};
+    result.code = 400;
+    var multi = client.multi();
+    multi.get(F_EVENT_NUM);
+    multi.get(R_EVENT_NUM);
+    multi.exec(function (err, replies) {
+        if (!err && replies !== null) {
+            result.first_served = replies[0];
+            result.random = replies[1];
+            cb(result);
+        } else {
+            cb(result);
+        }
+    });
+
+}
 
 var addRandomEventMember = function (user_id, cb) {
     var result = {};
     result.code = 400;
-    client.sadd(R_EVENT_NAME, user_id, function(err, reply) {
-//        console.log(err);
-//        console.log(reply);
-        if (!err && reply !== null) {
+    var multi = client.multi();
+    multi.sadd(R_EVENT_NAME, user_id);
+    multi.incr(R_EVENT_NUM);
+    multi.exec(function(err, replies) {
+        if (!err && replies !== null) {
             result.code = 0;
             cb(result);
         } else {
@@ -53,11 +91,13 @@ var firstServedEvent = function (user_id, cb) {
     client.zscore(F_EVENT_NAME, user_id, function(err, reply){
 
         if (reply === null) {
+            var multi = client.multi();
 
-            client.zadd(F_EVENT_NAME,time, user_id, function(err, reply) {
+            multi.zadd(F_EVENT_NAME,time, user_id);
+            multi.incr(F_EVENT_NUM);
+            multi.exec(function(err, replies) {
 
-                if (!err && reply !== null) {
-
+                if (!err && replies !== null) {
                     client.zrank(F_EVENT_NAME, user_id, function(err, reply) {
 
                         if (!err && reply !== null) {
@@ -89,9 +129,13 @@ var firstServedEvent = function (user_id, cb) {
     });
 }
 
-module.exports = {
+this.nf = {
+    genResult : genResult,
+    numberOfAttendees : numberOfAttendees,
     addRandomEventMember : addRandomEventMember,
     allRandomEventMemebers: allRandomEventMemebers,
     pickRandomEventMember: pickRandomEventMember,
     firstServedEvent: firstServedEvent
 }
+var self = this.nf;
+module.exports = this.nf;

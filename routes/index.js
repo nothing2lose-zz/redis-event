@@ -1,9 +1,14 @@
 var express = require('express');
 var router = express.Router();
 
+var ctrler = require('../controllers/redis_controller');
+
 /* GET home page. */
 router.get('/', function(req, res) {
-  res.render('index', { title: '아헿헤헤헿', random_users:[], picked_users:[] });
+  ctrler.genResult("자 참석해봐염", undefined, function (result){
+      res.render('index', result);
+  });
 });
+
 
 module.exports = router;
