@@ -21,6 +21,7 @@ var genResult = function (title, picked_users, cb) {
     });
 };
 
+// 선착순 및 랜덤이벤트 참석한 인원 수 얻는 함수
 var numberOfAttendees = function (cb) {
     var result = {};
     result.code = 400;
@@ -39,6 +40,7 @@ var numberOfAttendees = function (cb) {
 
 }
 
+// 랜덤 이벤트 등록
 var addRandomEventMember = function (user_id, cb) {
     var result = {};
     result.code = 400;
@@ -55,6 +57,7 @@ var addRandomEventMember = function (user_id, cb) {
     });
 }
 
+// 랜던 이벤트 등록한 맴버의 id list 얻기
 var allRandomEventMemebers = function (cb) {
     var result = {};
     result.code = 400;
@@ -70,6 +73,7 @@ var allRandomEventMemebers = function (cb) {
     });
 }
 
+// 랜덤 이벤트 임의 사용자 추출
 var pickRandomEventMember = function (count, cb) {
     var result = {};
     result.code = 400;
@@ -86,6 +90,7 @@ var pickRandomEventMember = function (count, cb) {
     });
 }
 
+// 선착순 이벤트 등록 (이미 등록 된 경우 rank 반환)
 var firstServedEvent = function (user_id, cb) {
     var result = {};
     result.code = 400;

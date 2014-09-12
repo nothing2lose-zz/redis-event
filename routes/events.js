@@ -4,20 +4,20 @@ var ctrler = require('../controllers/redis_controller');
 
 /* GET home page. */
 
+// routes
 
+//router.post('/test/first-served', function(req, res){
+//    var user_id = req.param('user_id', undefined);
+//    if (user_id) {
+//    } else {
+//        res.send(400);
+//    }
+//    ctrler.firstServedEvent(user_id, function (result) {
+//        res.send(200, result.rank);
+//    });
+//});
 
-
-router.post('/test/first-served', function(req, res){
-    var user_id = req.param('user_id', undefined);
-    if (user_id) {
-    } else {
-        res.send(400);
-    }
-    ctrler.firstServedEvent(user_id, function (result) {
-        res.send(200, result.rank);
-    });
-});
-
+// 선착순 post 호출
 router.post('/first-served', function(req, res) {
 
     var user_id = req.param('user_id', undefined);
@@ -39,6 +39,8 @@ router.post('/first-served', function(req, res) {
 
 });
 
+
+// 랜덤 추출 호출
 router.post('/random-pick', function(req, res) {
     ctrler.pickRandomEventMember(1, function(result){
         if (result.code !== 0) {
@@ -52,6 +54,7 @@ router.post('/random-pick', function(req, res) {
     });
 });
 
+// 랜덤 사용자 추출
 router.post('/random', function(req, res) {
     var user_id = req.param('user_id', undefined);
     if (user_id) {

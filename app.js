@@ -38,7 +38,8 @@ app.use('/', routes);
 app.use('/users', users);
 app.use('/events', events);
 
-/// catch 404 and forward to error handler
+    /// catch 404 and forward to error handler
+// 위의 routes가 아닌 경우 index로 redirection
 app.use(function(req, res, next) {
 //    var err = new Error('Not Found');
 //    err.status = 404;
@@ -50,6 +51,7 @@ app.use(function(req, res, next) {
 
 // development error handler
 // will print stacktrace
+// 개발환경일 경우 분기.
 if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
